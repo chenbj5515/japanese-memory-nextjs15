@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model memo_card {
+  id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  translation        String
+  create_time        DateTime    @db.Timestamptz(6)
+  update_time        DateTime    @updatedAt @db.Timestamptz(6)
+  record_file_path   String?
+  original_text      String?
+  review_times       Int?        @default(0)
+  user_id            String      @default("chenbj")
+  kana_pronunciation String?
+  word_card          word_card[] @relation("MemoToWord")
+}
+
+model articles {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content     String
+  create_time DateTime @db.Timestamptz(6)
+  user_id     String?
+  tags        String?
+  title       String?
+}
+
+model user {
+  user_id     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String    @db.VarChar(255)
+  name        String?   @db.VarChar(255)
+  image       String?   @db.VarChar(255)
+  create_time DateTime? @default(now()) @db.Timestamptz(6)
+  update_time DateTime? @default(now()) @db.Timestamptz(6)
+  github_id   String?   @db.VarChar(255)
+  profile     String?   @db.VarChar(100)
+}
+
+model word_card {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  word         String
+  meaning      String
+  create_time  DateTime  @db.Timestamptz(6)
+  user_id      String
+  review_times Int       @default(0)
+  memo_card_id String    @db.Uuid
+  memo_card    memo_card @relation("MemoToWord", fields: [memo_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_memo_card")
+}
