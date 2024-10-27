@@ -101,7 +101,7 @@ export function MemoCard(props: Prisma.memo_cardGetPayload<{}> & {
             ref={cardRef}
             className="p-5 relative leading-[1.9] tracking-[1.5px]"
         >
-            <div className="text-[14px] absolute -top-[30px] left-1 text-[gray]">
+            <div className="sm:text-[14px] text-[16px] absolute -top-[30px] left-1 text-[gray]">
                 {create_time ? getTimeAgo(create_time.toString()) : ""}
             </div>
             {/* 朗読ボタン */}

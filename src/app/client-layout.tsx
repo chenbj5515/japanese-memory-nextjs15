@@ -82,7 +82,7 @@ export default function ClientLayout({
                     <span className="peer-checked:bg-blue absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-black transition duration-500 rounded-3xl"></span>
                 </label>
             </header>
-            <main className="mt-[64px]">
+            <main className="pt-[86px]">
                 {children}
             </main>
         </>

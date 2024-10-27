@@ -152,7 +152,7 @@ export function LocalCard(props: ILoaclCard) {
             ref={ref}
             className="rounded-[20px] p-5 width-92-675 mx-auto mt-10 relative leading-[1.9] tracking-[1.5px]"
         >
-            <div className="text-[14px] absolute -top-[30px] left-1 text-[gray]">
+            <div className="sm:text-[14px] text-[16px] absolute -top-[30px] left-1 text-[gray]">
                 {/* {create_time ? getTimeAgo(create_time.toString()) : ""} */}
             </div>
             {/* 朗読ボタン */}
