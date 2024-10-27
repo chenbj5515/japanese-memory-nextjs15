@@ -29,7 +29,7 @@ export function WordCard(props: IProps) {
     }
 
     return (
-        <Card ref={cardRef} className="word-card w-[228px] h-[150px] rounded-[8px] dark:bg-eleDark dark:text-white p-5 mt-10 relative">
+        <Card ref={cardRef} className="sm:w-[228px] sm:text-sm text-[17px] w-full word-card sm:h-[150px] rounded-[8px] dark:bg-eleDark dark:text-white p-5 mt-2 mb-8 relative">
             <div
                 className="play-button-bg rounded-[50%] w-8 h-8 absolute top-2 right-2 cursor-pointer"
                 onClick={() => handlePlayBtn(word)}
@@ -38,9 +38,7 @@ export function WordCard(props: IProps) {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    height="16"
-                    width="20"
-                    className="volume_button absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
+                    className="sm:w-[20px] sm:h-[16px] w-[25px] h-[20px] volume_button absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
                 >
                     <path
                         clipRule="evenodd"
@@ -56,14 +54,16 @@ export function WordCard(props: IProps) {
                 ></section>
                 {meaning}
             </div>
-            <div className="flex justify-between w-[195px] absolute bottom-4">
+            <div className="flex justify-between sm:w-[195px] w-full mt-[32px] mb-[0px]">
                 <Button
+                    className="sm:text-sm text-[16px]"
                     onClick={() => onRecognize(id)}
                     variant="outline"
                 >
                     わかる
                 </Button>
                 <Button
+                    className="sm:text-sm text-[16px]"
                     onClick={() => onUnRecognize(wordCardInfo)}
                     variant="outline"
                 >

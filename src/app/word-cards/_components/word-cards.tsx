@@ -106,7 +106,7 @@ export function WordCards(props: IProps) {
         <>
             {showGlass && cardInfo ? (
                 <div className="fixed w-[100vw] h-[100vh] left-[0] top-[0] glass overflow-scroll z-[10000]">
-                    <div ref={containerRef} className="absolute max-h-[560px] left-[50%] top-[50%] center">
+                    <div ref={containerRef} className="sm:w-[auto] w-full p-[22px] absolute max-h-[92%] overflow-auto left-[50%] top-[50%] center">
                         <MemoCard {...cardInfo} />
                     </div>
                 </div>
@@ -119,6 +119,7 @@ export function WordCards(props: IProps) {
                                 row.map(cardInfo => (
                                     <div
                                         key={cardInfo.id}
+                                        className="sm:w-auto w-full"
                                         style={{ marginRight: `${idx === rows.length - 1 ? `${intervalRef.current}px` : "0"}` }}
                                     >
                                         <WordCard
