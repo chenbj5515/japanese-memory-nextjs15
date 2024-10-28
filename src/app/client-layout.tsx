@@ -15,32 +15,32 @@ export default function ClientLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // // const [theme, setTheme] = React.useState("light");
+    // const [theme, setTheme] = React.useState("light");
     // const { data } = useSession();
-    // const router = useRouter();
-    // const pathName = usePathname();
+    const router = useRouter();
+    const pathName = usePathname();
 
-    // function handleToggle() {
-    //     // if (theme === "dark") {
-    //     //     setTheme("light");
-    //     // } else {
-    //     //     setTheme("dark");
-    //     // }
-    //     document.body.classList.toggle("dark");
-    // }
+    function handleToggle() {
+        // if (theme === "dark") {
+        //     setTheme("light");
+        // } else {
+        //     setTheme("dark");
+        // }
+        document.body.classList.toggle("dark");
+    }
 
-    // async function handleLogout() {
-    //     await Logout();
-    //     router.push('/');
-    // }
+    async function handleLogout() {
+        await Logout();
+        router.push('/');
+    }
 
     return (
         <>
-            {/* <header className="p-[12px] justify-between items-center w-full fixed z-[200] top-0 flex">
+            <header className="p-[12px] justify-between items-center w-full fixed z-[200] top-0 flex">
                 <Popover>
                     <PopoverTrigger asChild>
                         <Avatar className="hidden sm:block  h-10 w-10 cursor-pointer">
-                            <AvatarImage src={data?.profile} alt="profile" />
+                            {/* <AvatarImage src={data?.profile} alt="profile" /> */}
                             <AvatarFallback>user</AvatarFallback>
                         </Avatar>
                     </PopoverTrigger>
@@ -81,7 +81,7 @@ export default function ClientLayout({
                     <span className="transition duration-300 ease-in-out peer-checked:translate-x-5 peer-checked:shadow-full-moon left-2 top-1 rounded-full shadow-crescent absolute h-5 w-5 z-[1]"></span>
                     <span className="peer-checked:bg-blue absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-black transition duration-500 rounded-3xl"></span>
                 </label>
-            </header> */}
+            </header>
             <main className="pt-[86px]">
                 {children}
             </main>
