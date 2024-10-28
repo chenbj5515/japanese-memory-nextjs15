@@ -15,17 +15,17 @@ export default function ClientLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // const [theme, setTheme] = React.useState("light");
-    // const { data } = useSession();
+    const [theme, setTheme] = React.useState("light");
+    const { data } = useSession();
     const router = useRouter();
     const pathName = usePathname();
 
     function handleToggle() {
-        // if (theme === "dark") {
-        //     setTheme("light");
-        // } else {
-        //     setTheme("dark");
-        // }
+        if (theme === "dark") {
+            setTheme("light");
+        } else {
+            setTheme("dark");
+        }
         document.body.classList.toggle("dark");
     }
 
@@ -40,7 +40,7 @@ export default function ClientLayout({
                 <Popover>
                     <PopoverTrigger asChild>
                         <Avatar className="hidden sm:block  h-10 w-10 cursor-pointer">
-                            {/* <AvatarImage src={data?.profile} alt="profile" /> */}
+                            <AvatarImage src={data?.profile} alt="profile" />
                             <AvatarFallback>user</AvatarFallback>
                         </Avatar>
                     </PopoverTrigger>
@@ -74,7 +74,7 @@ export default function ClientLayout({
                 <label className="hidden md:inline-block text-base relative w-[56px] h-[28px]">
                     <input
                         onChange={handleToggle}
-                        // checked={theme === "light"}
+                        checked={theme === "light"}
                         className="peer opacity-0 w-0 h-0"
                         type="checkbox"
                     />
