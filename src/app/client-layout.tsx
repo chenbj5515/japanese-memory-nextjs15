@@ -58,16 +58,16 @@ export default function ClientLayout({
                 <Tabs value={pathName.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
                     <TabsList className="grid w-full sm:grid-cols-4 grid-cols-3">
                         <TabsTrigger className="p-0 h-full" value="latest">
-                            <Link className="sm:text-sm text-[16px] w-full" prefetch href="/latest">最新</Link>
+                            <Link className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
                         </TabsTrigger>
                         <TabsTrigger className="p-0 h-full leading-[28px]" value="random">
-                            <Link className="sm:text-sm text-[16px] w-full" prefetch href="/random">ランダム</Link>
+                            <Link className="sm:text-sm text-[16px] w-full" href="/random">ランダム</Link>
                         </TabsTrigger>
                         <TabsTrigger className="p-0 h-full leading-[28px]" value="word cards">
-                            <Link className="sm:text-sm text-[16px] w-full" prefetch href="/word-cards">単語帳</Link>
+                            <Link className="sm:text-sm text-[16px] w-full" href="/word-cards">単語帳</Link>
                         </TabsTrigger>
                         <TabsTrigger className="sm:block hidden p-0 h-full leading-[28px]" value="translation">
-                            <Link className="w-full" prefetch href="/translation">翻訳練習</Link>
+                            <Link className="w-full" href="/translation">翻訳練習</Link>
                         </TabsTrigger>
                     </TabsList>
                 </Tabs >
