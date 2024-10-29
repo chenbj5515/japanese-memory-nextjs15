@@ -58,6 +58,7 @@ export default function ClientLayout({
                 </Popover>
                 <Tabs value={pathName.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
                     <TabsList className="grid w-full sm:grid-cols-4 grid-cols-3">
+                        <Link prefetch className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
                         {/* <TabsTrigger className="p-0 h-full" value="latest">
                             <Link prefetch className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
                         </TabsTrigger>
