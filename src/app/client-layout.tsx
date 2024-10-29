@@ -56,9 +56,9 @@ export default function ClientLayout({
                         </Button>
                     </PopoverContent>
                 </Popover>
-                {/* <Tabs value={pathName.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
+                <Tabs value={pathName.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
                     <TabsList className="grid w-full sm:grid-cols-4 grid-cols-3">
-                        <TabsTrigger className="p-0 h-full" value="latest">
+                        {/* <TabsTrigger className="p-0 h-full" value="latest">
                             <Link prefetch className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
                         </TabsTrigger>
                         <TabsTrigger className="p-0 h-full leading-[28px]" value="random">
@@ -69,9 +69,9 @@ export default function ClientLayout({
                         </TabsTrigger>
                         <TabsTrigger className="sm:block hidden p-0 h-full leading-[28px]" value="translation">
                             <Link prefetch className="w-full" href="/translation">翻訳練習</Link>
-                        </TabsTrigger>
+                        </TabsTrigger> */}
                     </TabsList>
-                </Tabs > */}
+                </Tabs >
                 <label className="hidden md:inline-block text-base relative w-[56px] h-[28px]">
                     <input
                         onChange={handleToggle}
