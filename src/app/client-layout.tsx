@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
@@ -9,6 +9,37 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Logout } from "@/server-actions";
 import "remixicon/fonts/remixicon.css";
+
+interface ErrorBoundaryProps {
+    children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        console.error("Link Component Error:", error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return <div>loading</div>;
+        }
+
+        return this.props.children;
+    }
+}
 
 export default function ClientLayout({
     children,
@@ -58,8 +89,7 @@ export default function ClientLayout({
                 </Popover>
                 <Tabs value={pathName.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
                     <TabsList className="grid w-full sm:grid-cols-4 grid-cols-3">
-                        <Link prefetch className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
-                        {/* <TabsTrigger className="p-0 h-full" value="latest">
+                        <TabsTrigger className="p-0 h-full" value="latest">
                             <Link prefetch className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
                         </TabsTrigger>
                         <TabsTrigger className="p-0 h-full leading-[28px]" value="random">
@@ -70,7 +100,7 @@ export default function ClientLayout({
                         </TabsTrigger>
                         <TabsTrigger className="sm:block hidden p-0 h-full leading-[28px]" value="translation">
                             <Link prefetch className="w-full" href="/translation">翻訳練習</Link>
-                        </TabsTrigger> */}
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs >
                 <label className="hidden md:inline-block text-base relative w-[56px] h-[28px]">
