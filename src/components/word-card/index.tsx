@@ -56,14 +56,14 @@ export function WordCard(props: IProps) {
             </div>
             <div className="flex justify-between sm:w-[195px] w-full mt-[32px] mb-[0px]">
                 <Button
-                    className="sm:text-base text-[16px]"
+                    className="sm:text-sm text-[16px]"
                     onClick={() => onRecognize(id)}
                     variant="outline"
                 >
                     わかる
                 </Button>
                 <Button
-                    className="sm:text-base text-[16px]"
+                    className="sm:text-sm text-[16px]"
                     onClick={() => onUnRecognize(wordCardInfo)}
                     variant="outline"
                 >
