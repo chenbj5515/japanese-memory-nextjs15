@@ -48,7 +48,7 @@ export function WordCard(props: IProps) {
                 </svg>
             </div>
             <div>{word}</div>
-            <div className="mt-1 relative">
+            <div className="mt-1 relative whitespace-nowrap overflow-hidden text-ellipsis" title={meaning}>
                 <section
                     className={`rounded-lg absolute unique-glass ${"glass"}  w-[101%] h-[105%] -left-[4px] -top-[2px]`}
                 ></section>

@@ -370,6 +370,7 @@ main,
 
 .glass {
   backdrop-filter: saturate(180%) blur(3px);
+  -webkit-backdrop-filter: saturate(180%) blur(3px);
 }
 
 /* 特定元素hover时取消毛玻璃效果 */
