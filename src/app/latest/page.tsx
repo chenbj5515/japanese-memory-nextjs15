@@ -1,6 +1,6 @@
-import React from "react"
-import { auth } from "@/auth"
-import { prisma } from "@/prisma"
+import React from "react";
+import { auth } from "@/auth";
+import { prisma } from "@/prisma";
 import { MemoCards, LocalCards, InputBox, WordCardAdder } from "@/components";
 
 export default async function Home() {
