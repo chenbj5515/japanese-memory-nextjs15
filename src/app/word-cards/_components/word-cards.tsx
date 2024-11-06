@@ -106,7 +106,7 @@ export function WordCards(props: IProps) {
         <>
             {showGlass && cardInfo ? (
                 <div className="fixed w-[100vw] h-[100vh] left-[0] top-[0] glass overflow-scroll z-[10000]">
-                    <div ref={containerRef} className="sm:w-[auto] w-full p-[22px] absolute max-h-[92%] overflow-auto left-[50%] top-[50%] center">
+                    <div ref={containerRef} className="sm:w-[auto] sm:min-w-[46vw] w-full p-[22px] absolute max-h-[92%] overflow-auto left-[50%] top-[50%] center">
                         <MemoCard {...cardInfo} />
                     </div>
                 </div>
