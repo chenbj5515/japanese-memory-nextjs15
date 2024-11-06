@@ -6,9 +6,6 @@ const withPWA = require("next-pwa")({
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    dynamicIO: true,
-  },
 };
 
 export default withSentryConfig(withSentryConfig(withPWA(nextConfig), {
