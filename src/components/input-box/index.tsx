@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { Plus } from "lucide-react";
 import { readStreamableValue } from 'ai/rsc';
 import { addCard } from "@/store/local-cards-slice";
-import { insertPlainTextAtCursor } from "@/utils";
+import { insertPlainTextAtCursor, transformString } from "@/utils";
 import { useForceUpdate } from "@/hooks";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,7 @@ export function InputBox() {
   const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
     event.preventDefault();
     const plainText = event.clipboardData.getData("text/plain");
-    insertPlainTextAtCursor(plainText);
+    insertPlainTextAtCursor(transformString(plainText));
     forUpdate();
   };
 
