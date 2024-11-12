@@ -1,6 +1,5 @@
 "use client"
 import React from "react";
-import { usePathname } from 'next/navigation';
 import { readStreamableValue } from 'ai/rsc';
 import { useSelector, TypedUseSelectorHook } from "react-redux";
 import { RootState } from "@/store";
@@ -67,7 +66,6 @@ function reducer(state: StateType, action: Action): StateType {
 export function WordCardAdder() {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const { cardId } = useTypedSelector((state: RootState) => state.cardIdSlice);
-    const pathName = usePathname();
 
     const meaningTextRef = React.useRef<HTMLDivElement>(null);
     const [{
@@ -76,6 +74,8 @@ export function WordCardAdder() {
         top,
         selectedText,
     }, dispatch] = React.useReducer(reducer, initialState);
+
+    const stateRef = React.useRef<typeof state | null>(null);
 
     function effectCleanMeaningTextContent() {
         if (meaningTextRef.current) {
@@ -91,7 +91,7 @@ export function WordCardAdder() {
         if (meaningTextRef.current) {
             const { output } = await askAI(`これは日本語の単語またはフレーズです：${selectedText}、それを中国語に翻訳してください、気をつけて原文とか余分な言葉を出さないで、翻訳結果だけを出してください。`);
             for await (const delta of readStreamableValue(output)) {
-                if (meaningTextRef.current && delta) {
+                if (meaningTextRef.current && delta && stateRef.current === "selected") {
                     meaningTextRef.current.textContent += delta;
                 }
             }
@@ -117,6 +117,7 @@ export function WordCardAdder() {
             effectCleanMeaningTextContent();
             effectCleanElementSelected();
         }
+        stateRef.current = state;
     }, [state]);
 
     async function handleSelectEvent() {
