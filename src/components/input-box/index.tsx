@@ -19,6 +19,7 @@ export function InputBox() {
   const editableRef = useRef<HTMLDivElement>(null);
   const forUpdate = useForceUpdate();
   const dispatch = useDispatch();
+  const [isComposing, setIsComposing] = React.useState(false);
 
   async function handleSendBtnClick(originalText: string) {
     if (!originalText) return;
@@ -46,13 +47,16 @@ export function InputBox() {
     const content = editableRef.current?.textContent;
     if (!content) return;
 
-    if (event.key === "Enter" && content) {
+    if (event.key === 'Enter') {
+      if (isComposing) {
+        // 正在输入法合成，不触发发送
+        return;
+      }
+
       event.preventDefault();
-      dispatch(
-        addCard(content)
-      );
+      dispatch(addCard(content));
       if (editableRef.current) {
-        editableRef.current.textContent = "";
+        editableRef.current.textContent = '';
         forUpdate();
       }
     }
@@ -69,6 +73,16 @@ export function InputBox() {
       forUpdate();
     }
   }
+
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = () => {
+    setTimeout(() => {
+      setIsComposing(false);
+    });
+  };
 
   return (
     <>
@@ -93,6 +107,8 @@ export function InputBox() {
         ref={editableRef}
         onPaste={handlePaste}
         onKeyDown={handleKeyDown}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
         className="dark:bg-bgDark dark:text-white dark:border-[1px] absolute input bg-[#fff] left-[50%] bottom-0 transhtmlForm -translate-x-1/2"
         contentEditable
         suppressContentEditableWarning
