@@ -21,7 +21,7 @@ export function InputBox() {
   const dispatch = useDispatch();
 
   async function handleSendBtnClick(originalText: string) {
-    if (typeof originalText !== "string") return;
+    if (!originalText) return;
     try {
       dispatch(
         addCard(originalText.includes(":") ? originalText.split(":")[1].trim() : originalText.trim())
