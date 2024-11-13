@@ -1,11 +1,17 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import { codeInspectorPlugin } from "code-inspector-plugin";
+
 const withPWA = require("next-pwa")({
   dest: "public",
 });
 
 const nextConfig: NextConfig = {
   /* config options here */
+  webpack: (config, { dev, isServer }) => {
+    config.plugins.push(codeInspectorPlugin({ bundler: 'webpack' }));
+    return config;
+  },
 };
 
 export default withSentryConfig(withSentryConfig(withPWA(nextConfig), {
