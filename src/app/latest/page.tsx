@@ -19,7 +19,7 @@ export default async function Home() {
 
   return (
     <>
-      <div className="pb-[86px]">
+      <div className="pb-[36px]">
         <MemoCards memoCardsInitial={memoCards} />
         <LocalCards />
       </div>

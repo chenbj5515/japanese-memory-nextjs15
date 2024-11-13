@@ -43,13 +43,13 @@ export function LocalCard(props: ILoaclCard) {
     })
 
     useAIGenerate({
-        prompt: `${original_text}，给出这句话的翻译，不要输出中文翻译以外的任何东西。`,
+        prompt: `${original_text}，给出这句话的中文翻译，注意一定要中文。`,
         onmessage: handleTranslationUpdate,
         onclose: handleTranslationDone
     })
 
     useAIGenerate({
-        prompt: `${original_text}，给出这句话的平假名读音，不要输出平假名和标点符号以外的任何东西。`,
+        prompt: `${original_text}，给出这句话的平假名读音，注意只需要平假名读音和对应位置的标点符号。`,
         onmessage: handleKanaUpdate,
         onclose: handleKanaDone
     })
@@ -150,7 +150,7 @@ export function LocalCard(props: ILoaclCard) {
     return (
         <Card
             ref={ref}
-            className="rounded-[20px] p-5 width-92-675 mx-auto mt-10 relative leading-[1.9] tracking-[1.5px]"
+            className="rounded-[20px] p-5 width-92-675 mx-auto relative leading-[1.9] tracking-[1.5px]"
         >
             <div className="sm:text-[14px] text-[16px] absolute -top-[30px] left-1 text-[gray]">
                 {/* {create_time ? getTimeAgo(create_time.toString()) : ""} */}
