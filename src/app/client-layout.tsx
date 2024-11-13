@@ -3,6 +3,8 @@ import React, { ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
+import { useDispatch } from 'react-redux';
+import { clearLocalCards } from '@/store/local-cards-slice';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -49,7 +51,8 @@ export default function ClientLayout({
     const [theme, setTheme] = React.useState("light");
     const { data } = useSession();
     const router = useRouter();
-    const pathName = usePathname();
+    const pathname = usePathname();
+    const dispatch = useDispatch();
 
     function handleToggle() {
         if (theme === "dark") {
@@ -63,8 +66,13 @@ export default function ClientLayout({
     async function handleLogout() {
         await Logout();
         router.push('/');
-        console.log(pathName)
     }
+
+    React.useEffect(() => {
+        dispatch(
+            clearLocalCards()
+        );
+    }, [pathname]);
 
     return (
         <>
@@ -87,7 +95,7 @@ export default function ClientLayout({
                         </Button>
                     </PopoverContent>
                 </Popover>
-                <Tabs value={pathName.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
+                <Tabs value={pathname.replace(/\//g, '').replace(/-/g, ' ')} className="w-[400px]">
                     <TabsList className="grid w-full sm:grid-cols-4 grid-cols-3">
                         <TabsTrigger className="p-0 h-full" value="latest">
                             <Link prefetch className="sm:text-sm text-[16px] w-full" href="/latest">最新</Link>
