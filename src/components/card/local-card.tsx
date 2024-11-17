@@ -150,14 +150,11 @@ export function LocalCard(props: ILoaclCard) {
     return (
         <Card
             ref={ref}
-            className="rounded-[20px] p-5 width-92-675 mx-auto relative leading-[1.9] tracking-[1.5px]"
+            className="p-5 relative leading-[1.9] tracking-[1.5px]"
         >
-            <div className="sm:text-[14px] text-[16px] absolute -top-[30px] left-1 text-[gray]">
-                {/* {create_time ? getTimeAgo(create_time.toString()) : ""} */}
-            </div>
             {/* 朗読ボタン */}
             <div
-                className="border-solid border-[1px] border-[hsl(var(--input))] rounded-[50%] w-12 h-12 absolute top-2 right-2 cursor-pointer"
+                className="border-solid border-[1px] border-[hsl(var(--input))] play-button-bg dark:bg-bgDark dark:shadow-none rounded-[50%] w-12 h-12 absolute top-2 right-2 cursor-pointer"
                 onClick={handlePlayBtn}
             >
                 <svg
@@ -175,15 +172,15 @@ export function LocalCard(props: ILoaclCard) {
                     ></path>
                 </svg>
             </div>
-            <div className="mb-[28px]">
-                原文：
-                <span
+            <div className="flex mb-[28px]">
+                <div
                     suppressContentEditableWarning
                     contentEditable
                     className="relative outline-none w-calc100-42"
                     onBlur={handleOriginalTextBlur}
                     ref={originalTextRef}
                 >
+                    原文：
                     {isFocused ? (
                         <section
                             className={`rounded-lg absolute ${isFocused ? "glass" : ""
@@ -191,7 +188,7 @@ export function LocalCard(props: ILoaclCard) {
                         ></section>
                     ) : null}
                     {original_text}
-                </span>
+                </div>
             </div>
             翻訳：
             <div
