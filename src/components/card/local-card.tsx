@@ -197,7 +197,7 @@ export function LocalCard(props: ILoaclCard) {
                 ref={translationTextRef}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                className="whitespace-pre-wrap pr-[42px] outline-none leading-[3]"
+                className="font-Default whitespace-pre-wrap pr-[42px] outline-none leading-[3]"
             >
             </div>
             読み：
