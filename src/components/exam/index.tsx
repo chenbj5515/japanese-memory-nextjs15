@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { PlayCircle } from 'lucide-react'
+import { containsKanji, speakText } from '@/utils'
 
 export default function ExamPage(props: any) {
-    const { results } = props;
+    const { wordCards, randomShortCards } = props;
     const [timeLeft, setTimeLeft] = useState(25 * 60) // 25 minutes in seconds
 
     useEffect(() => {
@@ -32,6 +33,12 @@ export default function ExamPage(props: any) {
         return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
     }
 
+    function handlePlay(original_text: string) {
+        original_text && speakText(original_text, {
+            voicerName: "ja-JP-NanamiNeural",
+        });
+    }
+
     return (
         <div className="p-5 font-Hiragino container w-[680px] pb-16 mx-auto bg-gray-50 min-h-screen">
             <h1 className='font-bold text-[24px] text-center'>試験</h1>
@@ -46,10 +53,15 @@ export default function ExamPage(props: any) {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {
-                            results.slice(0, 10).map((wordCard: any, index: number) => {
+                            wordCards.slice(0, 10).map((wordCard: any, index: number) => {
                                 return (
                                     <div key={index}>
                                         <Label htmlFor="q1-1" className="text-[15px]">{index + 1}.「{wordCard.word}」</Label>
+                                        {
+                                            containsKanji(wordCard.word) ? (
+                                                <Input id="q1-1" placeholder="平假名を入力してください" className="mt-2" />
+                                            ) : null
+                                        }
                                         <Input id="q1-1" placeholder="中国語で入力してください" className="mt-2" />
                                     </div>
                                 )
@@ -65,7 +77,7 @@ export default function ExamPage(props: any) {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {
-                            results.slice(10).map((wordCard: any, index: number) => {
+                            wordCards.slice(10).map((wordCard: any, index: number) => {
                                 return (
                                     <div key={index}>
                                         <Label htmlFor="q1-1" className="text-[15px]">{index + 1}.「{wordCard.meaning.replace("意味：", "")}」</Label>
@@ -83,41 +95,21 @@ export default function ExamPage(props: any) {
                         <CardTitle className="text-[18px]">聴解問題</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div>
-                            <div className="flex items-center justify-start mb-4">
-                                <Button variant="outline" size="icon">
-                                    <PlayCircle className="h-6 w-6" />
-                                    <span className="sr-only">音声1を再生</span>
-                                </Button>
-                                <span className="ml-2 text-[15px]">問題 1</span>
-                            </div>
-                            <Label htmlFor="q3-1">聞いた文を入力してください：</Label>
-                            <Input id="q3-1" placeholder="日本語で入力してください" className="mt-2" />
-                        </div>
-                        <Separator />
-                        <div>
-                            <div className="flex items-center justify-start mb-4">
-                                <Button variant="outline" size="icon">
-                                    <PlayCircle className="h-6 w-6" />
-                                    <span className="sr-only">音声2を再生</span>
-                                </Button>
-                                <span className="ml-2 text-[15px]">問題 2</span>
-                            </div>
-                            <Label htmlFor="q3-2">聞いた文を入力してください：</Label>
-                            <Input id="q3-2" placeholder="日本語で入力してください" className="mt-2" />
-                        </div>
-                        <Separator />
-                        <div>
-                            <div className="flex items-center justify-start mb-4">
-                                <Button variant="outline" size="icon">
-                                    <PlayCircle className="h-6 w-6" />
-                                    <span className="sr-only">音声3を再生</span>
-                                </Button>
-                                <span className="ml-2 text-[15px]">問題 3</span>
-                            </div>
-                            <Label htmlFor="q3-3">聞いた文を入力してください：</Label>
-                            <Input id="q3-3" placeholder="日本語で入力してください" className="mt-2" />
-                        </div>
+                        {
+                            randomShortCards.map((cardInfo: any, index: number) => (
+                                <div key={index}>
+                                    <div className="flex items-center justify-start mb-4">
+                                        <Button onClick={() => handlePlay(cardInfo.original_text)} variant="outline" size="icon">
+                                            <PlayCircle className="h-6 w-6" />
+                                            <span className="sr-only">音声を再生</span>
+                                        </Button>
+                                        <span className="ml-2 text-[15px]">問題 {index + 1}</span>
+                                    </div>
+                                    <Label htmlFor="q3-1">聞いた文を入力してください：</Label>
+                                    <Input id="q3-1" placeholder="日本語で入力してください" className="mt-2" />
+                                </div>
+                            ))
+                        }
                     </CardContent>
                 </Card>
             </div>

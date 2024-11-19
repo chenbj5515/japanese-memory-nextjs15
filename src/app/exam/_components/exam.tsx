@@ -8,11 +8,9 @@ import { RootState } from '@/store'
 const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default function Component(props: any) {
-    const { results } = props;
+    const { wordCards, randomShortCards } = props;
     const dispatch = useDispatch();
     const { status } = useTypedSelector((state: RootState) => state.examStateSlice);
-
-    console.log(results, "results===")
 
     const handleAgree = () => {
         dispatch(
@@ -34,6 +32,6 @@ export default function Component(props: any) {
     }
 
     return (
-        <ExamPage results={results} />
+        <ExamPage wordCards={wordCards} randomShortCards={randomShortCards} />
     )
 }
