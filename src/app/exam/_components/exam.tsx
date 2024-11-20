@@ -24,7 +24,7 @@ export default function Component(props: any) {
                 <h1 className="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200 text-center">
                     試験を始める準備はできましたか？
                 </h1>
-                <Button onClick={handleAgree} size="sm" className="text-md px-6 py-5">
+                <Button onClick={handleAgree} size="sm" className="w-[120px] text-md px-6 py-5">
                     はい
                 </Button>
             </div>
