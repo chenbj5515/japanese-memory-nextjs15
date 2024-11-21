@@ -52,49 +52,65 @@ export default function ExamPage(props: any) {
         });
     }
 
-    async function mockReview(original_text: string, key: string, userInputValue: string, type: string) {
-        if (type === "hiragana" && userInputValue) {
-            const { output } = await askAI(`「${original_text}」这个短语对应的平假名是「${userInputValue}」吗？如果你觉得是就返回true，你觉得不对就返回false，不要返回其他任何东西。`, 0.9);
-            let result = "";
+    async function grade(original_text: string, userInputValue: string, type: string) {
+        if (!userInputValue) {
             let correctAnswer = "";
+            let prompt = type === "hiragana"
+                ? `「${original_text}」这个短语的平假名读音是什么？请只给我平假名读音不要输出任何其他内容。`
+                : `「${original_text}」这个短语的中文翻译是什么？请只给我中文翻译结果不要输出任何其他内容。`
+
+            const { output } = await askAI(prompt, 0.9);
             for await (const delta of readStreamableValue(output)) {
                 if (delta) {
-                    result += delta;
+                    correctAnswer += delta;
                 }
             }
-            let isCorrect = result === "true"
-            if (!isCorrect) {
-                const { output: hiraganaOutput } = await askAI(`「${original_text}」这个短语的平假名读音是什么？请只给我平假名读音不要输出任何其他内容。`, 0.9);
-                for await (const delta of readStreamableValue(hiraganaOutput)) {
-                    if (delta) {
-                        correctAnswer += delta;
-                    }
-                }
-                isCorrect = correctAnswer === userInputValue;
-            }
-            const feedback = isCorrect ? "Good job!" : `The correct answer is: ${correctAnswer}`;
-            const score = isCorrect ? 3 : 0;
-
             return {
-                userInputValue,
-                original_text,
-                isCorrect,
-                feedback,
+                isCorrect: false,
+                feedback: `参考答案: ${correctAnswer}`,
                 correctAnswer,
-                score,
+                score: 0,
             };
         }
 
+        const prompt1 = type === "hiragana"
+            ? `「${original_text}」这个短语的读法用假名表示出来是「${userInputValue}」吗？如果你觉得是就返回true，你觉得不对就返回false，不要返回其他任何东西。`
+            : `「${original_text}」这个短语用中文表达的话意思是「${userInputValue}」吗？如果你觉得是这个意思的话就返回true，你觉得并不是这个意思的就返回false，不要返回其他任何东西。`
+        const { output } = await askAI(prompt1, 0.9);
+        let result = "";
+        let correctAnswer = "";
+        for await (const delta of readStreamableValue(output)) {
+            if (delta) {
+                result += delta;
+            }
+        }
+        let isCorrect = result === "true"
+        const prompt2 = type === "hiragana"
+            ? `「${original_text}」这个短语的平假名读音是什么？请只给我平假名读音不要输出任何其他内容。`
+            : `「${original_text}」这个短语的中文翻译是什么？请只给我中文翻译结果不要输出任何其他内容。`
+        if (!isCorrect) {
+            const { output: hiraganaOutput } = await askAI(prompt2, 0.9);
+            for await (const delta of readStreamableValue(hiraganaOutput)) {
+                if (delta) {
+                    correctAnswer += delta;
+                }
+            }
+            isCorrect = correctAnswer === userInputValue;
+        }
+        const feedback = isCorrect ? "正解" : `参考答案: ${correctAnswer}`;
+        const score = isCorrect ? 3 : 0;
+
         return {
-            isCorrect: false,
-            feedback: "",
-            correctAnswer: "",
-            score: 0,
+            userInputValue,
+            original_text,
+            isCorrect,
+            feedback,
+            correctAnswer,
+            score,
         };
     }
 
     function handleCommit() {
-        const results: any = {};
         let totalScore = 0;
 
         wordCards.slice(0, 10).forEach((wordCard: any, index: number) => {
@@ -102,31 +118,42 @@ export default function ExamPage(props: any) {
             const keyChinese = `q1-${index}-chinese`;
 
             if (containsKanji(wordCard.word)) {
-                mockReview(wordCard.word, keyHiragana, inputValues[keyHiragana] || "", "hiragana")
+                grade(wordCard.word, inputValues[keyHiragana] || "", "hiragana")
                     .then(hiraganaResult => {
-                        // const hiraganaResult = 
-                        // results[keyHiragana] = hiraganaResult;
                         totalScore += hiraganaResult?.score || 0;
                         setReviewResults((prev: any) => ({
                             ...prev,
                             [keyHiragana]: hiraganaResult
                         }));
                     })
-                // const chineseResult = mockReview(wordCard, keyChinese, inputValues[keyChinese] || "", "chinese");
-                // results[keyChinese] = chineseResult;
+                grade(wordCard.word, inputValues[keyChinese] || "", "chinese")
+                    .then(hiraganaResult => {
+                        totalScore += hiraganaResult?.score || 0;
+                        setReviewResults((prev: any) => ({
+                            ...prev,
+                            [keyChinese]: hiraganaResult
+                        }));
+                    })
 
             } else {
-                // const chineseResult = mockReview(wordCard, keyChinese, inputValues[keyChinese] || "", "chinese");
-                // results[keyChinese] = chineseResult;
-                // totalScore += chineseResult.score * 2; // Double score if no Hiragana
+                grade(wordCard.word, inputValues[keyHiragana] || "", "chinese")
+                    .then(hiraganaResult => {
+                        totalScore += hiraganaResult?.score || 0;
+                        setReviewResults((prev: any) => ({
+                            ...prev,
+                            [keyChinese]: hiraganaResult
+                        }));
+                    })
             }
         });
 
+        console.log(totalScore, "totalScore===")
     }
 
     return (
         <div className="p-5 font-NewYork container w-[680px] pb-16 mx-auto bg-gray-50 min-h-screen">
             <h1 className='font-bold text-[24px] text-center'>試験</h1>
+            {/* <div className='fixed top-4 right-8 text-[48px]'>99</div> */}
             <div
                 ref={timerDisplayRef}
                 className="p-2 inset-0 flex items-center justify-center text-xl font-medium tabular-nums"
@@ -161,9 +188,9 @@ export default function ExamPage(props: any) {
                                                     {reviewResults[keyHiragana] && (
                                                         <div className="mt-2 flex items-center">
                                                             {reviewResults[keyHiragana].isCorrect ? (
-                                                                <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                                                                <CheckCircle color="#32CD32" className="h-5 w-5 text-green-500 mr-2" />
                                                             ) : (
-                                                                <XCircle className="h-5 w-5 text-red-500 mr-2" />
+                                                                <XCircle color="#E50914" className="h-5 w-5 text-red-500 mr-2" />
                                                             )}
                                                             <span className="text-sm">
                                                                 {reviewResults[keyHiragana].feedback}
@@ -183,9 +210,9 @@ export default function ExamPage(props: any) {
                                         {reviewResults[keyChinese] && (
                                             <div className="mt-2 flex items-center">
                                                 {reviewResults[keyChinese].isCorrect ? (
-                                                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                                                    <CheckCircle color="#32CD32" className="h-5 w-5 text-green-500 mr-2" />
                                                 ) : (
-                                                    <XCircle className="h-5 w-5 text-red-500 mr-2" />
+                                                    <XCircle color="#E50914" className="h-5 w-5 text-red-500 mr-2" />
                                                 )}
                                                 <span className="text-sm">
                                                     {reviewResults[keyChinese].feedback}
