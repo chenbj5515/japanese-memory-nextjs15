@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from 'next/image';
+import diff_match_patch from 'diff-match-patch';
+import { Search, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,7 +15,7 @@ import { askAI } from '@/server-actions'
 import { readStreamableValue } from 'ai/rsc';
 import { TWordCard } from '@/app/word-cards/page'
 import { Prisma } from '@prisma/client'
-import diff_match_patch from 'diff-match-patch'
+import { MemoCard } from '../card';
 
 interface IProps {
     wordCards: TWordCard[]
@@ -32,6 +35,7 @@ type GradeResult = {
     feedback: string;
     correctAnswer: string;
     score: number;
+    totalScore: number,
 };
 
 function useCountDowner() {
@@ -63,9 +67,11 @@ export default function ExamPage(props: IProps) {
     const { wordCards, randomShortCards } = props;
     const [inputValues, setInputValues] = useState<any>({});
     const [reviewResults, setReviewResults] = useState<any>({}); // Stores review results for each question
-    const [score, setScore] = useState<number | null>(null);
+    // const [score, setScore] = useState<number | null>(null);
+    const score = Object.keys(reviewResults).reduce((acc, cur) => acc + reviewResults[cur].score, 0);
     const { timerDisplayRef } = useCountDowner();
-    const compeleted = score !== null;
+    // const compeleted = score !== null;
+    const [compeleted, setCompeleted] = useState(false);
 
     const handleInputChange = (key: string, value: string) => {
         setInputValues((prev: any) => ({
@@ -108,7 +114,7 @@ export default function ExamPage(props: IProps) {
         return result === "true";
     }
 
-    async function grade(wordCard: TWordCard, userInputValue: string, type: string): Promise<GradeResult> {
+    async function grade(wordCard: TWordCard, userInputValue: string, type: string, score: number): Promise<GradeResult> {
         const { word, meaning } = wordCard;
 
         // 确定当前状态
@@ -130,6 +136,7 @@ export default function ExamPage(props: IProps) {
                 feedback: `参考答案: ${correctAnswer}`,
                 correctAnswer,
                 score: 0,
+                totalScore: score,
             };
         }
 
@@ -142,9 +149,10 @@ export default function ExamPage(props: IProps) {
                 userInputValue,
                 word,
                 isCorrect: correctAnswer === userInputValue,
-                feedback: correctAnswer === userInputValue ? "正解" : `参考答案: ${correctAnswer}`,
+                feedback: correctAnswer === userInputValue ? "正解！" : `参考答案: ${correctAnswer}`,
                 correctAnswer,
-                score: correctAnswer === userInputValue ? 3 : 0,
+                score: correctAnswer === userInputValue ? score : 0,
+                totalScore: score,
             };
         }
 
@@ -152,28 +160,25 @@ export default function ExamPage(props: IProps) {
             userInputValue,
             word,
             isCorrect,
-            feedback: isCorrect ? "正解" : `参考答案: ${type === "japanese" ? word : meaning.replace("意味：", "")}`,
+            feedback: isCorrect ? "正解！" : `参考答案: ${type === "japanese" ? word : meaning.replace("意味：", "")}`,
             correctAnswer: type === "japanese" ? word : meaning.replace("意味：", ""),
-            score: isCorrect ? 3 : 0,
+            score: isCorrect ? score : 0,
+            totalScore: score,
         };
     }
 
     async function handleCommit() {
-        let totalScore = 0;
         const gradePromises: Promise<void>[] = [];
 
         // 日本語から中国語への翻訳のグレード
-        wordCards.slice(0, 10).forEach((wordCard: any, index: number) => {
+        wordCards.slice(0, 10).forEach((wordCard, index) => {
             const keyHiragana = `q1-${index}-hiragana`;
             const keyChinese = `q1-${index}-chinese`;
 
             if (containsKanji(wordCard.word)) {
                 gradePromises.push(
-                    grade(wordCard, inputValues[keyHiragana] || "", "hiragana")
+                    grade(wordCard, inputValues[keyHiragana] || "", "hiragana", 2)
                         .then(hiraganaResult => {
-                            if (hiraganaResult.isCorrect) {
-                                totalScore += 2;
-                            }
                             setReviewResults((prev: any) => ({
                                 ...prev,
                                 [keyHiragana]: hiraganaResult,
@@ -182,11 +187,8 @@ export default function ExamPage(props: IProps) {
                 );
 
                 gradePromises.push(
-                    grade(wordCard, inputValues[keyChinese] || "", "chinese")
+                    grade(wordCard, inputValues[keyChinese] || "", "chinese", 2)
                         .then(chineseResult => {
-                            if (chineseResult.isCorrect) {
-                                totalScore += 2;
-                            }
                             setReviewResults((prev: any) => ({
                                 ...prev,
                                 [keyChinese]: chineseResult,
@@ -195,11 +197,8 @@ export default function ExamPage(props: IProps) {
                 );
             } else {
                 gradePromises.push(
-                    grade(wordCard, inputValues[keyHiragana] || "", "chinese")
+                    grade(wordCard, inputValues[keyHiragana] || "", "chinese", 4)
                         .then(chineseResult => {
-                            if (chineseResult.isCorrect) {
-                                totalScore += 4;
-                            }
                             setReviewResults((prev: any) => ({
                                 ...prev,
                                 [keyChinese]: chineseResult,
@@ -210,15 +209,12 @@ export default function ExamPage(props: IProps) {
         });
 
         // 中国語から日本語への翻訳のグレード
-        wordCards.slice(10).forEach((wordCard: any, index: number) => {
+        wordCards.slice(10).forEach((wordCard, index) => {
             const keyJapanese = `q2-${index}-japanese`;
 
             gradePromises.push(
-                grade(wordCard, inputValues[keyJapanese] || "", "japanese")
+                grade(wordCard, inputValues[keyJapanese] || "", "japanese", 4)
                     .then(japaneseResult => {
-                        if (japaneseResult.isCorrect) {
-                            totalScore += 4;
-                        }
                         setReviewResults((prev: any) => ({
                             ...prev,
                             [keyJapanese]: japaneseResult,
@@ -252,13 +248,14 @@ export default function ExamPage(props: IProps) {
                             .filter(diffInfo => diffInfo[0] === 1)
                             .reduce((acc, cur) => acc + cur[1].length, 0);
 
-                        if (rightWordsLen > 0.9 * (cardInfo.original_text?.length ?? 0)) {
-                            totalScore += 4;
-                        }
+                        const right = rightWordsLen > 0.9 * (cardInfo.original_text?.length ?? 0)
 
                         setReviewResults((prev: any) => ({
                             ...prev,
-                            [keyListening]: htmlString,
+                            [keyListening]: {
+                                score: right ? 4 : 0,
+                                feedback: htmlString
+                            },
                         }));
                         resolve();
                     })
@@ -266,10 +263,57 @@ export default function ExamPage(props: IProps) {
             }
         });
 
-        // 等待所有评分完成后设置总分
         await Promise.all(gradePromises);
-        setScore(totalScore);
+        setCompeleted(true);
     }
+
+    const [cardInfo, setCardInfo] = useState<Prisma.memo_cardGetPayload<{}> | null>(null);
+    const [showGlass, setShowGlass] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        document.addEventListener("mouseup", (event) => {
+            const target = event.target;
+            if (target instanceof Node) {
+                const inContainer =
+                    target === containerRef.current
+                    || containerRef.current?.contains(target);
+                if (inContainer === false) {
+                    setShowGlass(false);
+                }
+            }
+        });
+    }, []);
+
+    function handleSearch(cardInfo: Prisma.memo_cardGetPayload<{}>) {
+        setCardInfo(cardInfo);
+        setShowGlass(true);
+    }
+
+    const [curKey, setCurKey] = useState("");
+
+    function onFixClick(key: string) {
+        setCurKey(key);
+        setIsOpen(true);
+    }
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleConfirm = () => {
+        setIsOpen(false);
+        setReviewResults((prev: any) => ({
+            ...prev,
+            [curKey]: {
+                ...prev[curKey],
+                isCorrect: true,
+                feedback: "正解！",
+                score: prev[curKey].totalScore,
+            },
+        }));
+    };
+
+    const handleCancel = () => {
+        setIsOpen(false);
+    };
 
     return (
         <div className="p-5 relative font-NewYork container w-[680px] mx-auto bg-gray-50 min-h-screen">
@@ -288,7 +332,7 @@ export default function ExamPage(props: IProps) {
                 compeleted ? (
                     <div className='absolute w-[360px] top-[6px] -right-[440px]'>
                         <div
-                            style={{marginLeft: score.toString().length === 1 ? "34px" : "16px"}}
+                            style={{ marginLeft: score.toString().length === 1 ? "46px" : "16px" }}
                             className='text-wrong h-[142px] -rotate-6 text-[112px] top'
                         >{score}</div>
                         <Image
@@ -309,13 +353,24 @@ export default function ExamPage(props: IProps) {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {
-                            wordCards.slice(0, 10).map((wordCard: any, index: number) => {
+                            wordCards.slice(0, 10).map((wordCard, index) => {
                                 const keyHiragana = `q1-${index}-hiragana`;
                                 const keyChinese = `q1-${index}-chinese`;
 
                                 return (
                                     <div key={index}>
-                                        <Label htmlFor={keyHiragana} className="text-[15px]">{index + 1}.「{wordCard.word}」</Label>
+                                        <div className='flex items-center'>
+                                            <Label htmlFor={keyHiragana} className="text-[15px]">{index + 1}.「{wordCard.word}」</Label>
+                                            {
+                                                compeleted ? (
+                                                    <Search
+                                                        className="cursor-pointer text-gray-500 hover:text-blue-500 ml-2"
+                                                        size={20}
+                                                        onClick={() => handleSearch(wordCard.memo_card)}
+                                                    />
+                                                ) : null
+                                            }
+                                        </div>
                                         {
                                             containsKanji(wordCard.word) && (
                                                 <>
@@ -338,6 +393,11 @@ export default function ExamPage(props: IProps) {
                                                             <span className="text-sm">
                                                                 {reviewResults[keyHiragana].feedback}
                                                             </span>
+                                                            <Wrench
+                                                                className="cursor-pointer text-gray-500 hover:text-yellow-500 ml-4"
+                                                                size={20}
+                                                                onClick={() => onFixClick(keyHiragana)}
+                                                            />
                                                         </div>
                                                     )}
                                                 </>
@@ -362,6 +422,11 @@ export default function ExamPage(props: IProps) {
                                                 <span className="text-sm">
                                                     {reviewResults[keyChinese].feedback}
                                                 </span>
+                                                <Wrench
+                                                    className="cursor-pointer text-gray-500 hover:text-yellow-500 ml-4"
+                                                    size={20}
+                                                    onClick={() => onFixClick(keyChinese)}
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -379,12 +444,23 @@ export default function ExamPage(props: IProps) {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {
-                            wordCards.slice(10).map((wordCard: any, index: number) => {
+                            wordCards.slice(10).map((wordCard, index) => {
                                 const keyJapanese = `q2-${index}-japanese`;
 
                                 return (
                                     <div key={index}>
-                                        <Label htmlFor={keyJapanese} className="text-[15px]">{index + 1}.「{wordCard.meaning.replace("意味：", "")}」</Label>
+                                        <div className='flex items-center'>
+                                            <Label htmlFor={keyJapanese} className="text-[15px]">{index + 1}.「{wordCard.meaning.replace("意味：", "")}」</Label>
+                                            {
+                                                compeleted ? (
+                                                    <Search
+                                                        className="cursor-pointer text-gray-500 hover:text-blue-500 ml-2"
+                                                        size={20}
+                                                        onClick={() => handleSearch(wordCard.memo_card)}
+                                                    />
+                                                ) : null
+                                            }
+                                        </div>
                                         <Input
                                             id={keyJapanese}
                                             placeholder="日本語で入力してください"
@@ -404,6 +480,11 @@ export default function ExamPage(props: IProps) {
                                                 <span className="text-sm">
                                                     {reviewResults[keyJapanese].feedback}
                                                 </span>
+                                                <Wrench
+                                                    className="cursor-pointer text-gray-500 hover:text-yellow-500 ml-4"
+                                                    size={20}
+                                                    onClick={() => onFixClick(keyJapanese)}
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -421,20 +502,29 @@ export default function ExamPage(props: IProps) {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {
-                            randomShortCards.map((cardInfo: any, index: number) => {
+                            randomShortCards.map((cardInfo, index) => {
                                 const keyListening = `q3-${index}-listening`;
                                 return (
                                     <div key={index}>
                                         <div className="flex items-center justify-start mb-4">
-                                            <Button onClick={() => handlePlay(cardInfo.original_text)} variant="outline" size="icon">
+                                            <Button onClick={() => handlePlay(cardInfo.original_text ?? "")} variant="outline" size="icon">
                                                 <PlayCircle className="h-6 w-6" />
                                                 <span className="sr-only">音声を再生</span>
                                             </Button>
                                             <span className="ml-2 text-[15px]">問題 {index + 1}</span>
+                                            {
+                                                compeleted ? (
+                                                    <Search
+                                                        className="cursor-pointer text-gray-500 hover:text-blue-500 ml-4"
+                                                        size={20}
+                                                        onClick={() => handleSearch(cardInfo)}
+                                                    />
+                                                ) : null
+                                            }
                                         </div>
 
                                         {reviewResults[keyListening] ? (
-                                            <div className="ml-2 text-[15px] p-2" dangerouslySetInnerHTML={{ __html: reviewResults[keyListening] }}></div>
+                                            <div className="ml-2 text-[15px] p-2" dangerouslySetInnerHTML={{ __html: reviewResults[keyListening].feedback }}></div>
                                         ) : (
                                             <>
                                                 <Label htmlFor={keyListening}>聞いた文を入力してください：</Label>
@@ -465,6 +555,28 @@ export default function ExamPage(props: IProps) {
                     </div>
                 ) : null
             }
+            {showGlass && cardInfo ? (
+                <div className="fixed w-[100vw] h-[100vh] left-[0] top-[0] glass overflow-scroll z-[10000]">
+                    <div ref={containerRef} className="sm:w-[auto] sm:min-w-[46vw] w-full p-[22px] absolute max-h-[92%] overflow-auto left-[50%] top-[50%] center">
+                        <MemoCard {...cardInfo} />
+                    </div>
+                </div>
+            ) : null}
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent>
+                    <DialogHeader className='p-3'>
+                        <DialogTitle>この結果は正しいと確信されていますか？</DialogTitle>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button className='w-[100px]' variant="default" onClick={handleConfirm}>
+                            はい
+                        </Button>
+                        <Button variant="secondary" onClick={handleCancel}>
+                            キャンセル
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

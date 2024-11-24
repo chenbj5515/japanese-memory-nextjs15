@@ -99,7 +99,7 @@ export function WordCards(props: IProps) {
             const n = prev[0].length;
             const flattened = prev.flat();
             const updated = flattened.filter(item => item.id !== id);
-            const next = [];
+            const next: TWordCard[][] = [];
             for (let i = 0; i < updated.length; i += n) {
                 next.push(updated.slice(i, i + n));
             }
