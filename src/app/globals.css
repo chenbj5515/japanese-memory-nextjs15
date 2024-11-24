@@ -30,10 +30,6 @@ main,
     letter-spacing: 0.5px;
     line-height: 2;
   }
-
-  .font-Hiragino {
-    font-family: "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "Yu Mincho", serif;
-  }
 }
 
 .card {
@@ -48,14 +44,6 @@ main,
   top: 38%;
   transform: translate(-50%, -50%);
 }
-
-/* .word-card {
-  font-family: "Arial";
-  padding: 1rem;
-  background: #f1f1f3;
-  box-shadow: 5px 5px 6px #dadada, -2px -2px 3px #f6f6f6;
-  position: relative;
-} */
 
 .btn2 {
   margin-top: 10px;
@@ -91,16 +79,6 @@ main,
   box-shadow: inset 8px 8px 10px #c3c3c3, inset -8px -8px 10px #cfcfcf;
 }
 
-/* .play-button-bg {
-  transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 1px 2px -1px rgba(0, 0, 0, 0.3),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.1),
-    0 -1px 1px -1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
-} */
-
 .play-button-bg:active {
   box-shadow: 0 12px 25px -4px rgba(0, 0, 0, 0.4),
     inset 0 -8px 30px 1px rgba(255, 255, 255, 0.9),
@@ -129,7 +107,6 @@ main,
   border: 2px solid lightgrey;
   outline: none;
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-  /* box-shadow: 0px 0px 20px -18px; */
 }
 
 .input:hover {
@@ -162,12 +139,6 @@ main,
 
 .toggle .button {
   transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
-  /* box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.3),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.1),
-    0 -1px 1px -1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1); */
   border: 1px solid hsl(var(--input));
   border-radius: 68.8px;
   position: absolute;

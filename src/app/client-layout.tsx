@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
@@ -41,11 +41,15 @@ export default function ClientLayout({
         router.push('/');
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         dispatch(
             clearLocalCards()
         );
     }, [pathname]);
+
+    useEffect(() => {
+        router.prefetch("/exam");
+    }, [router]);
 
     return (
         <>
@@ -81,8 +85,8 @@ export default function ClientLayout({
                                 <TabsTrigger className="p-0 h-full leading-[28px]" value="word cards">
                                     <Link prefetch className="sm:text-sm text-[16px] w-full" href="/word-cards">単語帳</Link>
                                 </TabsTrigger>
-                                <TabsTrigger className="sm:block hidden p-0 h-full leading-[28px]" value="exam">
-                                    <Link prefetch className="w-full" href="/exam">試験</Link>
+                                <TabsTrigger className="sm:block hidden p-0 h-full leading-[28px]" value="exam preparation">
+                                    <Link prefetch className="w-full" href="/exam-preparation">試験</Link>
                                 </TabsTrigger>
                             </TabsList>
                         </Tabs >

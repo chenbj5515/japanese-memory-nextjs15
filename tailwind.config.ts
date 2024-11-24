@@ -12,7 +12,7 @@ const config: Config = {
 			bgDark: '#212121',
 			eleDark: '#151515',
 			black: 'rgb(26 26 26)',
-			wrong: 'rgb(215,2,17)',
+			wrong: '#E50914',
 			correct: 'limegreen',
 			gray: '#999',
 			blue: '#1e07f0',

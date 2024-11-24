@@ -1,11 +1,7 @@
 import { prisma } from "@/prisma";
-import { Prisma } from '@prisma/client';
 import { auth } from "@/auth";
-import ExamPage from "./_components/exam";
-
-export type TWordCard = Prisma.word_cardGetPayload<{}> & {
-    memo_card: Prisma.memo_cardGetPayload<{}>
-};
+import Exam from "@/components/exam";
+import { Prisma } from '@prisma/client';
 
 export default async function App() {
     const session = await auth()
@@ -23,7 +19,7 @@ export default async function App() {
         },
     });
 
-    const randomShortCards = await prisma.$queryRaw`
+    const randomShortCards = await prisma.$queryRaw<Prisma.memo_cardGetPayload<{}>[]>`
         SELECT *
         FROM memo_card
         WHERE LENGTH(original_text) < 50
@@ -33,9 +29,8 @@ export default async function App() {
 
     return (
         <div className="w-full pl-[20px] pb-10 pr-[20px]">
-            <ExamPage wordCards={wordCards} randomShortCards={randomShortCards} />
+            <Exam wordCards={wordCards} randomShortCards={randomShortCards} />
         </div>
     );
 }
 
-export const dynamic = 'force-dynamic';
